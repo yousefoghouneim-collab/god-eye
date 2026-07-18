@@ -1,0 +1,21 @@
+{
+  "name": "god-eye",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently -n web,api,osint -c cyan,green,yellow \"pnpm --filter web dev\" \"pnpm --filter api dev\" \"pnpm run dev:osint\"",
+    "dev:osint": "cd osint && python3 -m uvicorn app.main:app --reload --port 8001",
+    "build": "pnpm --filter shared build && pnpm --filter web build && pnpm --filter api build",
+    "typecheck": "pnpm -r typecheck",
+    "lint": "pnpm -r lint",
+    "format": "prettier --write ."
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "prettier": "^3.5.3",
+    "typescript": "^5.8.3"
+  },
+  "engines": {
+    "node": ">=20",
+    "pnpm": ">=9"
+  }
+}

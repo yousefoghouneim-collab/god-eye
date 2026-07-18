@@ -1,0 +1,110 @@
+:root {
+  /* ── Base surfaces (cool neutral ink, NOT pure black, NOT trendy #0A0A0A) ── */
+  --ink-000:  #06090D;   /* deepest — behind globe / vignette edges           */
+  --ink-050:  #0A0E14;   /* app background                                     */
+  --ink-100:  #0E141B;   /* rail / bar background                              */
+  --ink-150:  #131A22;   /* panel surface                                      */
+  --ink-200:  #1A222C;   /* raised panel / input                               */
+  --ink-250:  #222C38;   /* hover surface                                      */
+
+  /* ── Structure ── */
+  --line-hair:  #1E2831; /* hairline dividers, panel edges                     */
+  --line-soft:  #2A3742; /* stronger dividers, active borders                  */
+  --grid-line:  #16202A; /* graticule / background grid                        */
+  --bracket:    #3A4A57; /* corner brackets on panels                          */
+
+  /* ── Text (soft off-white, never #FFFFFF glare) ── */
+  --text-hi:   #C9D4DE;  /* primary                                            */
+  --text-mid:  #8B9AA8;  /* secondary / labels                                 */
+  --text-lo:   #5C6B78;  /* tertiary / disabled                               */
+  --text-inv:  #06090D;  /* on light/accent fills                              */
+
+  /* ── Signal palette (used sparingly, meaningfully) ── */
+  --sig-amber:  #E0A82E; /* PRIMARY ACCENT: active tab, selection, focus       */
+  --sig-amber-dim: #A87F20;
+  --sig-green:  #3FB27F; /* live / nominal / positive delta                    */
+  --sig-orange: #D9822B; /* elevated / warning                                 */
+  --sig-red:    #D6453D; /* critical / alert / negative delta                  */
+  --sig-steel:  #4A7BA7; /* neutral data / info / links                        */
+
+  /* ── Globe-specific ── */
+  --globe-land:   #16303A;  /* landmass base                                   */
+  --globe-land-hi:#1E4A57;  /* land highlight                                  */
+  --globe-ocean:  #04080C;  /* ocean                                           */
+  --globe-atmo:   #2E5A6E;  /* atmosphere fresnel (teal-steel, not #4466cc)    */
+  --globe-grat:   #1B2E38;  /* graticule on globe                              */
+  --globe-term:   #0A1218;  /* night side of terminator                        */
+
+  /* ── Radii (small; instruments are not rounded blobs) ── */
+  --r-xs: 2px;
+  --r-sm: 3px;
+  --r-md: 4px;
+  --r-lg: 6px;
+
+  /* ── Elevation (matte shadow, subtle) ── */
+  --shadow-panel: 0 2px 10px rgba(0,0,0,0.45), 0 0 0 1px var(--line-hair);
+  --glow-active:  0 0 0 1px var(--sig-amber), 0 0 12px rgba(224,168,46,0.18);
+
+  /* ── Type scale ── */
+  --fs-10: 10px;
+  --fs-11: 11px;
+  --fs-12: 12px;
+  --fs-13: 13px;
+  --fs-14: 14px;
+  --fs-16: 16px;
+  --fs-20: 20px;
+  --fs-26: 26px;
+
+  /* ── Spacing (strict 4px grid) ── */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-6: 24px;
+  --sp-8: 32px;
+
+  /* ── Layout ── */
+  --topbar-h: 40px;
+  --left-rail-w: 300px;
+  --right-rail-w: 360px;
+  --ticker-h: 28px;
+}
+
+/* ── Visual mode overrides ── */
+[data-style="SATELLITE"] {
+  --ink-050: #080C12;
+  --globe-atmo: #3A6A80;
+}
+
+[data-style="FLIR"] {
+  --ink-050: #0A0800;
+  --text-hi: #E0A82E;
+  --text-mid: #A87F20;
+  --sig-amber: #FFB800;
+  --sig-green: #E0A82E;
+  --sig-steel: #A87F20;
+  --globe-atmo: #4A3200;
+}
+
+[data-style="NVG"] {
+  --ink-050: #02110A;
+  --ink-100: #041A0E;
+  --ink-150: #062212;
+  --text-hi: #39FF7A;
+  --text-mid: #1DA050;
+  --text-lo: #0F5A2C;
+  --sig-amber: #39FF7A;
+  --sig-green: #39FF7A;
+  --sig-steel: #1DA050;
+  --line-hair: #0A3018;
+  --bracket: #1DA050;
+  --globe-atmo: #0F5A2C;
+}
+
+[data-style="CRT"] {
+  --text-hi: #39FF7A;
+  --text-mid: #1DA050;
+  --sig-amber: #E0A82E;
+  --bracket: #39FF7A;
+  --globe-atmo: #1A4A30;
+}

@@ -1,0 +1,8 @@
+packages:
+  - "packages/*"
+  - "web"
+  - "api"
+allowBuilds:
+  esbuild: true
+onlyBuiltDependencies:
+  - esbuild

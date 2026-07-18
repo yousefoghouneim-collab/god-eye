@@ -1,0 +1,54 @@
+version: "3.9"
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: web/Dockerfile
+    ports:
+      - "5173:5173"
+    depends_on:
+      - api
+    environment:
+      - VITE_API_URL=http://api:3001
+      - VITE_OSINT_URL=http://osint:8001
+
+  api:
+    build:
+      context: .
+      dockerfile: api/Dockerfile
+    ports:
+      - "3001:3001"
+    depends_on:
+      - redis
+    env_file: .env
+    environment:
+      - REDIS_URL=redis://redis:6379
+      - OSINT_SERVICE_URL=http://osint:8001
+
+  osint:
+    build:
+      context: .
+      dockerfile: osint/Dockerfile
+    ports:
+      - "8001:8001"
+    env_file: .env
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+
+  # Optional: uncomment to run Ollama locally
+  # ollama:
+  #   image: ollama/ollama:latest
+  #   ports:
+  #     - "11434:11434"
+  #   volumes:
+  #     - ollama-data:/root/.ollama
+
+volumes:
+  redis-data:
+  # ollama-data:
