@@ -1,7 +1,4 @@
 import { h } from 'preact';
-import type { VisualMode } from '@god-eye/shared';
-
-const VISUAL_MODES: VisualMode[] = ['DEFAULT', 'SATELLITE', 'FLIR', 'NVG', 'CRT'];
 
 const LAYER_CATEGORIES = [
   {
@@ -53,11 +50,8 @@ const LAYER_CATEGORIES = [
 ];
 
 function cycleMode() {
-  const current = document.documentElement.getAttribute('data-style') as VisualMode;
-  const idx = VISUAL_MODES.indexOf(current);
-  const next = VISUAL_MODES[(idx + 1) % VISUAL_MODES.length];
-  document.documentElement.setAttribute('data-style', next);
-  localStorage.setItem('god-eye-style', next);
+  const fn = (window as unknown as Record<string, unknown>).cycleVisualMode;
+  if (typeof fn === 'function') fn();
 }
 
 export function App() {
