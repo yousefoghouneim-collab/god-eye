@@ -3,6 +3,8 @@ packages:
   - "web"
   - "api"
 allowBuilds:
+  '@vaadin/vaadin-usage-statistics': true
   esbuild: true
 onlyBuiltDependencies:
   - esbuild
+  - "@vaadin/vaadin-usage-statistics"

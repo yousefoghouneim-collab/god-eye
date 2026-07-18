@@ -8,6 +8,7 @@ export default defineConfig({
     alias: {
       '@': resolve(__dirname, 'src'),
       '@shared': resolve(__dirname, '../packages/shared/src'),
+      '@god-eye/plugin-sdk': resolve(__dirname, '../packages/plugin-sdk/src/index.ts'),
     },
   },
   server: {

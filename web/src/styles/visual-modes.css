@@ -1,0 +1,195 @@
+/**
+ * Visual mode overlay effects — CSS-only, no JS logic changes.
+ * All effects are implemented as pointer-events:none pseudo-elements or
+ * animations that activate via html[data-style="…"] attribute.
+ *
+ * Respects prefers-reduced-motion: disables flicker and grain animations.
+ */
+
+/* ── Shared overlay plumbing ────────────────────────────────────────────── */
+
+html::before,
+html::after {
+  content: '';
+  display: block;
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* ── CRT mode ────────────────────────────────────────────────────────────── */
+/* Scanlines via repeating-linear-gradient */
+[data-style="CRT"]::before {
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 2px,
+    rgba(0, 0, 0, 0.18) 2px,
+    rgba(0, 0, 0, 0.18) 4px
+  );
+  animation: crt-flicker 0.15s infinite;
+}
+
+/* Subtle barrel / vignette */
+[data-style="CRT"]::after {
+  background: radial-gradient(
+    ellipse at center,
+    transparent 60%,
+    rgba(0, 20, 10, 0.55) 100%
+  );
+}
+
+@keyframes crt-flicker {
+  0%   { opacity: 1; }
+  45%  { opacity: 1; }
+  50%  { opacity: 0.94; }
+  55%  { opacity: 1; }
+  90%  { opacity: 1; }
+  95%  { opacity: 0.97; }
+  100% { opacity: 1; }
+}
+
+/* CRT text glow — panels and telemetry get a faint phosphor bloom */
+[data-style="CRT"] .panel,
+[data-style="CRT"] .left-rail,
+[data-style="CRT"] .right-rail,
+[data-style="CRT"] .topbar {
+  text-shadow: 0 0 6px rgba(57, 255, 122, 0.25);
+}
+
+[data-style="CRT"] .panel__bracket-bl,
+[data-style="CRT"] .panel__bracket-br {
+  filter: drop-shadow(0 0 3px rgba(57, 255, 122, 0.5));
+}
+
+/* ── NVG (Night-Vision Goggles) mode ────────────────────────────────────── */
+/* Subtle film grain overlay */
+[data-style="NVG"]::before {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23noise)' opacity='0.08'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
+  opacity: 0.35;
+  animation: nvg-grain 0.08s steps(1) infinite;
+}
+
+/* NVG vignette — heavier than default, circular */
+[data-style="NVG"]::after {
+  background: radial-gradient(
+    ellipse at center,
+    transparent 50%,
+    rgba(0, 6, 2, 0.70) 100%
+  );
+}
+
+@keyframes nvg-grain {
+  0%   { background-position: 0 0; }
+  10%  { background-position: -5px -10px; }
+  20%  { background-position: 15px 5px; }
+  30%  { background-position: -10px 15px; }
+  40%  { background-position: 5px -5px; }
+  50%  { background-position: -15px 10px; }
+  60%  { background-position: 10px -15px; }
+  70%  { background-position: -5px 5px; }
+  80%  { background-position: 15px -10px; }
+  90%  { background-position: 0px 15px; }
+  100% { background-position: -10px 0; }
+}
+
+/* NVG phosphor bloom on active elements */
+[data-style="NVG"] .topbar__mode--active,
+[data-style="NVG"] .layer-row--active .layer-row__label {
+  text-shadow: 0 0 8px rgba(57, 255, 122, 0.60);
+  filter: brightness(1.2);
+}
+
+/* ── FLIR (thermal) mode ─────────────────────────────────────────────────── */
+/* Desaturate the entire UI, then tint amber — effect: thermal readout look */
+[data-style="FLIR"]::before {
+  background: rgba(20, 10, 0, 0.12);
+}
+
+/* Thermal vignette */
+[data-style="FLIR"]::after {
+  background: radial-gradient(
+    ellipse at center,
+    transparent 55%,
+    rgba(30, 10, 0, 0.50) 100%
+  );
+}
+
+/* FLIR: desaturate images/canvas, apply sepia-amber tint */
+[data-style="FLIR"] .canvas-area,
+[data-style="FLIR"] #globe-container,
+[data-style="FLIR"] #flat-map-container {
+  filter: saturate(0) sepia(0.4) hue-rotate(15deg) brightness(0.92);
+}
+
+/* ── DOSSIER mode ────────────────────────────────────────────────────────── */
+/* High-contrast classified-document aesthetic */
+[data-style="DOSSIER"] {
+  --ink-050:  #0A0C0E;
+  --ink-100:  #0C0F12;
+  --ink-150:  #101418;
+  --ink-200:  #161C22;
+  --text-hi:  #E8EDF2;
+  --text-mid: #A0AEBB;
+  --text-lo:  #606E7B;
+  --sig-amber: #C8A020;
+  --line-hair: #1C2430;
+  --bracket:   #5A6A80;
+  --globe-atmo: #1E3A4E;
+}
+
+/* DOSSIER: serif headers on panel titles */
+[data-style="DOSSIER"] .panel__title,
+[data-style="DOSSIER"] .dossier__type {
+  font-family: "IBM Plex Serif", "Georgia", serif;
+  font-style: italic;
+  letter-spacing: 0.05em;
+}
+
+/* DOSSIER: faint horizontal rule under each panel row for "evidence" look */
+[data-style="DOSSIER"] .dossier__grid {
+  border-left: 2px solid var(--sig-amber);
+  padding-left: 8px;
+}
+
+/* DOSSIER: vignette */
+[data-style="DOSSIER"]::after {
+  background: radial-gradient(
+    ellipse at center,
+    transparent 65%,
+    rgba(0, 0, 0, 0.4) 100%
+  );
+}
+
+/* ── Reduced-motion: disable all animations ─────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  [data-style="CRT"]::before,
+  [data-style="NVG"]::before {
+    animation: none;
+  }
+  [data-style="CRT"] .panel,
+  [data-style="CRT"] .left-rail,
+  [data-style="CRT"] .right-rail,
+  [data-style="CRT"] .topbar {
+    text-shadow: none;
+  }
+  [data-style="NVG"] .topbar__mode--active,
+  [data-style="NVG"] .layer-row--active .layer-row__label {
+    text-shadow: none;
+    filter: none;
+  }
+}
+
+/* ── Global vignette (all modes) ────────────────────────────────────────── */
+/* Soft edge darkening gives the instrument panel its depth */
+html:not([data-style])::after,
+[data-style="DEFAULT"]::after,
+[data-style="SATELLITE"]::after {
+  background: radial-gradient(
+    ellipse at center,
+    transparent 70%,
+    rgba(6, 9, 13, 0.35) 100%
+  );
+}

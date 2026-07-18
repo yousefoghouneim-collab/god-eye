@@ -31,6 +31,7 @@ export interface GlobeApi {
   setVisualMode(mode: VisualMode): void;
   getViewport(): { lat: number; lng: number; altitude: number };
   on(event: string, cb: (data: unknown) => void): void;
+  getGlobeInstance(): unknown;
   destroy(): void;
 }
 
@@ -410,6 +411,10 @@ export function createGlobeView(container: HTMLElement): GlobeApi {
     on(event: string, cb: EventCb) {
       if (!listeners[event]) listeners[event] = [];
       listeners[event].push(cb);
+    },
+
+    getGlobeInstance() {
+      return globe;
     },
 
     destroy() {

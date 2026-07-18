@@ -38,4 +38,25 @@ export interface GlobeExt extends GlobeInstance {
   controls(): OrbitControls;
   toGlobeCoords(x: number, y: number): { lat: number; lng: number } | null;
   _destructor(): void;
+
+  // Points layer
+  pointsData(): object[];
+  pointsData(data: object[]): GlobeExt;
+  pointLat(fn: string | ((d: object) => number)): GlobeExt;
+  pointLng(fn: string | ((d: object) => number)): GlobeExt;
+  pointAltitude(fn: number | ((d: object) => number)): GlobeExt;
+  pointRadius(fn: number | ((d: object) => number)): GlobeExt;
+  pointColor(fn: string | ((d: object) => string)): GlobeExt;
+  pointLabel(fn: string | ((d: object) => string)): GlobeExt;
+  pointsMerge(merge: boolean): GlobeExt;
+  pointsTransitionDuration(ms: number): GlobeExt;
+  onPointClick(fn: (point: object, event: MouseEvent) => void): GlobeExt;
+
+  // HTML elements layer
+  htmlElementsData(): object[];
+  htmlElementsData(data: object[]): GlobeExt;
+  htmlLat(fn: string | ((d: object) => number)): GlobeExt;
+  htmlLng(fn: string | ((d: object) => number)): GlobeExt;
+  htmlAltitude(fn: number | ((d: object) => number)): GlobeExt;
+  htmlElement(fn: string | ((d: object) => HTMLElement)): GlobeExt;
 }

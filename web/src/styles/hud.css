@@ -503,3 +503,87 @@ html, body, #app {
   z-index: 5;
   opacity: 0.4;
 }
+
+/* ── Dossier ── */
+.dossier__type {
+  font-family: var(--ff-mono);
+  font-size: var(--fs-11);
+  font-weight: 600;
+  color: var(--signal-amber);
+  letter-spacing: 0.08em;
+  margin-bottom: 8px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--line-hair);
+}
+.dossier__grid {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 3px 12px;
+  font-size: var(--fs-11);
+}
+.dossier__grid .hud-label {
+  white-space: nowrap;
+}
+.dossier__grid .telemetry {
+  text-align: right;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── Command palette results ── */
+.cmd-palette__result {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  cursor: pointer;
+  border-bottom: 1px solid var(--line-hair);
+  font-size: var(--fs-12);
+}
+.cmd-palette__result:hover,
+.cmd-palette__result:focus {
+  background: var(--ink-100);
+  outline: none;
+}
+.cmd-palette__result-type {
+  font-family: var(--ff-mono);
+  font-size: var(--fs-10);
+  color: var(--signal-amber);
+  min-width: 56px;
+  letter-spacing: 0.05em;
+}
+.cmd-palette__result-label {
+  color: var(--text-hi);
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.cmd-palette__result-detail {
+  font-family: var(--ff-mono);
+  font-size: var(--fs-10);
+  color: var(--text-lo);
+}
+.cmd-palette__empty {
+  padding: 16px;
+  text-align: center;
+  color: var(--text-lo);
+  font-size: var(--fs-12);
+}
+
+/* ── AI Brief ── */
+.ai-brief {
+  font-family: var(--ff-mono);
+  font-size: var(--fs-11);
+  line-height: 1.5;
+  color: var(--text-mid);
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 300px;
+  overflow-y: auto;
+}
+.panel__title {
+  display: flex;
+  align-items: center;
+}

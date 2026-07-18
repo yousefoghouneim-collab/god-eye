@@ -1,18 +1,37 @@
 version: "3.9"
 
+# GOD-EYE — one-command self-host
+# Usage:
+#   cp .env.example .env        # fill in any optional API keys
+#   docker compose up --build   # first run builds images
+#   docker compose up           # subsequent runs (images cached)
+#
+# The web UI is served at http://localhost:8080
+# API on :3001, OSINT service on :8001, Redis on :6379
+
 services:
+
+  # ── Web (Vite build → nginx) ─────────────────────────────────────────────
   web:
     build:
       context: .
       dockerfile: web/Dockerfile
     ports:
-      - "5173:5173"
+      - "8080:80"
     depends_on:
-      - api
-    environment:
-      - VITE_API_URL=http://api:3001
-      - VITE_OSINT_URL=http://osint:8001
+      api:
+        condition: service_healthy
+      osint:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost/api/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
 
+  # ── Node API ─────────────────────────────────────────────────────────────
   api:
     build:
       context: .
@@ -20,34 +39,66 @@ services:
     ports:
       - "3001:3001"
     depends_on:
-      - redis
-    env_file: .env
+      redis:
+        condition: service_healthy
+    env_file:
+      - .env
     environment:
       - REDIS_URL=redis://redis:6379
-      - OSINT_SERVICE_URL=http://osint:8001
+      - OSINT_URL=http://osint:8001
+      - PORT=3001
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3001/api/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+    restart: unless-stopped
 
+  # ── Python OSINT service ─────────────────────────────────────────────────
   osint:
     build:
       context: .
       dockerfile: osint/Dockerfile
     ports:
       - "8001:8001"
-    env_file: .env
+    env_file:
+      - .env
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/osint/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
 
+  # ── Redis cache ───────────────────────────────────────────────────────────
   redis:
     image: redis:7-alpine
+    command: redis-server --save 60 1 --loglevel warning
     ports:
       - "6379:6379"
     volumes:
       - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
 
-  # Optional: uncomment to run Ollama locally
+  # ── Ollama (optional local AI) ────────────────────────────────────────────
+  # Uncomment to run Ollama locally. After first start, pull a model:
+  #   docker compose exec ollama ollama pull llama3.2
+  # Then set AI_PROVIDER=ollama and OLLAMA_BASE_URL=http://ollama:11434 in .env
+  #
   # ollama:
   #   image: ollama/ollama:latest
   #   ports:
   #     - "11434:11434"
   #   volumes:
   #     - ollama-data:/root/.ollama
+  #   restart: unless-stopped
 
 volumes:
   redis-data:
