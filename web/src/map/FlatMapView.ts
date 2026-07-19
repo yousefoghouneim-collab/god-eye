@@ -4,9 +4,18 @@
  */
 import { Map as MapLibreMap } from 'maplibre-gl';
 import { MapboxOverlay } from '@deck.gl/mapbox';
-import { ScatterplotLayer } from '@deck.gl/layers';
+import { ScatterplotLayer, PathLayer } from '@deck.gl/layers';
 import { DataBus } from '../bus/data-bus.js';
-import type { GodEyeEntity, EarthquakeEntity, FireEntity } from '@god-eye/shared';
+import type { GodEyeEntity, EarthquakeEntity, FireEntity, AircraftEntity } from '@god-eye/shared';
+
+// Aircraft trail history for 2D map (mirrors globe-renderer logic)
+const TRAIL_MAX_2D = 12;
+const aircraftTrails2D = new Map<string, Array<[number, number]>>();
+
+interface TrailPath {
+  id: string;
+  path: Array<[number, number]>;
+}
 
 const TYPE_COLORS: Record<string, [number, number, number, number]> = {
   earthquake: [224, 168, 46, 200],   // amber
@@ -68,7 +77,21 @@ function rebuildLayers() {
     },
   });
 
-  overlay.setProps({ layers: [scatterLayer] });
+  const trailData: TrailPath[] = [];
+  for (const [id, trail] of aircraftTrails2D) {
+    if (trail.length >= 2) trailData.push({ id, path: trail });
+  }
+
+  const trailLayer = new PathLayer({
+    id: 'aircraft-trails',
+    data: trailData,
+    getPath: (d: TrailPath) => d.path,
+    getColor: [0, 230, 118, 160],
+    getWidth: 1.5,
+    widthUnits: 'pixels' as const,
+  });
+
+  overlay.setProps({ layers: [trailLayer, scatterLayer] });
 }
 
 export function createFlatMapView(container: HTMLElement): { destroy: () => void } {
@@ -94,6 +117,19 @@ export function createFlatMapView(container: HTMLElement): { destroy: () => void
       layerData.delete(layer);
     } else {
       layerData.set(layer, data);
+      if (layer === 'aircraft') {
+        for (const entity of data) {
+          const ac = entity as AircraftEntity;
+          const trail = aircraftTrails2D.get(ac.icao24) ?? [];
+          trail.push([ac.lng, ac.lat]);
+          if (trail.length > TRAIL_MAX_2D) trail.shift();
+          aircraftTrails2D.set(ac.icao24, trail);
+        }
+        const activeIds = new Set(data.map((e) => (e as AircraftEntity).icao24));
+        for (const id of aircraftTrails2D.keys()) {
+          if (!activeIds.has(id)) aircraftTrails2D.delete(id);
+        }
+      }
     }
     rebuildLayers();
   });
