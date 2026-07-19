@@ -117,6 +117,39 @@ function toggleRendererMode() {
 
 (window as unknown as Record<string, unknown>).toggleRendererMode = toggleRendererMode;
 
+// ─── Country news fetcher ───
+async function fetchCountryNews(country: string) {
+  const newsEl = document.getElementById('dossier-news');
+  if (!newsEl) return;
+  try {
+    const res = await fetch(`/api/news?country=${encodeURIComponent(country)}`);
+    if (!res.ok) { newsEl.innerHTML = ''; return; }
+    const data = await res.json() as {
+      ok: boolean;
+      items: Array<{ title: string; link: string; source: string; pubDate: string }>;
+    };
+    if (!data.ok || !data.items.length) { newsEl.innerHTML = ''; return; }
+    newsEl.innerHTML = `
+      <div class="hud-label" style="margin-bottom:6px;color:var(--signal-amber)">
+        LATEST NEWS — ${country.toUpperCase()}
+      </div>
+      ${data.items.map(item => `
+        <div style="margin-bottom:8px;border-left:2px solid var(--line-hair);padding-left:8px">
+          <a href="${item.link}" target="_blank" rel="noopener noreferrer"
+             style="color:var(--text-hi);font-size:var(--fs-11);line-height:1.4;text-decoration:none;display:block"
+             onmouseover="this.style.color='var(--signal-amber)'"
+             onmouseout="this.style.color='var(--text-hi)'">
+            ${item.title}
+          </a>
+          <span style="color:var(--text-lo);font-size:var(--fs-10)">
+            ${item.source ? item.source + ' · ' : ''}${item.pubDate ? new Date(item.pubDate).toLocaleDateString() : ''}
+          </span>
+        </div>`).join('')}`;
+  } catch {
+    if (newsEl) newsEl.innerHTML = '';
+  }
+}
+
 // ─── Location dossier (right-click) ───
 async function showLocationDossier(lat: number, lng: number) {
   const panel = document.querySelector('#selection-dossier .panel__body');
@@ -128,6 +161,7 @@ async function showLocationDossier(lat: number, lng: number) {
       <span class="hud-label">STATUS</span><span class="telemetry">Resolving...</span>
     </div>`;
 
+  let resolvedCountry = '';
   try {
     const res = await fetch(
       `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&zoom=5`,
@@ -136,6 +170,7 @@ async function showLocationDossier(lat: number, lng: number) {
     if (res.ok) {
       const data = await res.json() as { display_name?: string; address?: { country?: string; state?: string; city?: string } };
       const addr = data.address ?? {};
+      resolvedCountry = addr.country ?? '';
       panel.innerHTML = `
         <div class="dossier__type">LOCATION DOSSIER</div>
         <div class="dossier__grid">
@@ -147,10 +182,21 @@ async function showLocationDossier(lat: number, lng: number) {
         </div>
         <div id="dossier-imagery" style="margin-top:8px;color:var(--text-lo);font-size:var(--fs-11)">
           Loading satellite imagery...
+        </div>
+        <div id="dossier-news" style="margin-top:8px;color:var(--text-lo);font-size:var(--fs-11)">
+          Loading news...
         </div>`;
     }
   } catch {
     // Nominatim may be rate-limited
+  }
+
+  // Fetch country news (non-blocking)
+  if (resolvedCountry) {
+    fetchCountryNews(resolvedCountry);
+  } else {
+    const newsEl = document.getElementById('dossier-news');
+    if (newsEl) newsEl.innerHTML = '';
   }
 
   // Fetch Sentinel-2 thumbnail (non-blocking, OSINT service)

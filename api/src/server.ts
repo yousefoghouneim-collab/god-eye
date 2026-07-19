@@ -8,6 +8,7 @@ import { registerWsRelay } from './relay/ws.js';
 import { startAllPolls } from './polls.js';
 import { registerMcpRoutes } from './mcp/index.js';
 import { registerAgentRoutes } from './agent/bus.js';
+import { registerNewsRoutes } from './routes/news.js';
 import { startWatchOfficer, getWatchOfficerConfig, updateWatchOfficerConfig } from './agent/watch-officer.js';
 
 const app = Fastify({ logger: true });
@@ -23,6 +24,7 @@ await registerAnalysisRoutes(app);
 await registerAIRoutes(app);
 await registerMcpRoutes(app);
 await registerAgentRoutes(app);
+await registerNewsRoutes(app);
 
 app.get('/api/health', async () => ({
   status: 'ok',
