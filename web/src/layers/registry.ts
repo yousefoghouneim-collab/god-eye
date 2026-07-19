@@ -224,6 +224,16 @@ export const LAYER_REGISTRY: LayerDef[] = [
     source: 'curated',
   },
 
+  // ─── Egypt ───
+  {
+    key: 'egypt-cities',
+    label: 'Egypt — City Detail',
+    icon: '🇪🇬',
+    category: 'geopolitical',
+    renderers: ['globe', 'flat'],
+    source: 'curated',
+  },
+
   // ─── OSINT / Sensors ───
   {
     key: 'telegram-osint',

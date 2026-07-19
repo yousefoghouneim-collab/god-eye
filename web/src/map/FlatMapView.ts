@@ -18,6 +18,7 @@ interface TrailPath {
 }
 
 const TYPE_COLORS: Record<string, [number, number, number, number]> = {
+  'egypt-city': [255, 215, 0, 220],   // gold
   earthquake: [224, 168, 46, 200],   // amber
   fire: [255, 69, 0, 200],           // orange-red
   event: [79, 195, 247, 200],        // teal-light

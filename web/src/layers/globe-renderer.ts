@@ -30,6 +30,7 @@ interface RenderedPoint {
 
 /** Color scheme per entity type */
 const TYPE_COLORS: Record<string, string> = {
+  'egypt-city': '#FFD700',  // gold — Egyptian cities
   earthquake: '#E0A82E',  // amber
   fire: '#FF4500',        // orange-red
   event: '#4FC3F7',       // teal-light

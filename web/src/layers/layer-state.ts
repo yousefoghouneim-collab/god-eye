@@ -102,6 +102,20 @@ export async function fetchInitialData() {
     }
   }
 
+  // Egypt cities
+  try {
+    const res = await fetch('/api/egypt/cities');
+    if (res.ok) {
+      const json = await res.json() as { data: unknown[] };
+      if (json.data) {
+        layerData.set('egypt-cities', json.data as import('@god-eye/shared').GodEyeEntity[]);
+        if (enabledLayers.has('egypt-cities')) {
+          DataBus.emit('layer:render', { layer: 'egypt-cities', data: json.data });
+        }
+      }
+    }
+  } catch { /* API may not be ready */ }
+
   // Curated static datasets
   for (const [dataset, layerKey] of Object.entries(CURATED_MAP)) {
     try {

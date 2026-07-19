@@ -63,6 +63,49 @@ function renderFire(e: FireEntity): string {
     </div>`;
 }
 
+interface EgyptCityRecord {
+  id: string;
+  type: string;
+  lat: number;
+  lng: number;
+  label?: string;
+  source: string;
+  timestamp?: number;
+  name?: string;
+  population?: number;
+  description?: string;
+}
+
+function renderEgyptCity(e: EgyptCityRecord): string {
+  const isGouna = e.id === 'eg-gouna';
+  const popDisplay = isGouna
+    ? `<span class="telemetry" id="gouna-pop-display">${(e.population ?? 0).toLocaleString()}</span>`
+    : `<span class="telemetry">${e.population?.toLocaleString() ?? '—'}</span>`;
+
+  const html = `
+    <div class="dossier__type">EGYPT — ${escHtml(e.name ?? e.label ?? '—')}</div>
+    <div class="dossier__grid">
+      <span class="hud-label">CITY</span><span class="telemetry">${escHtml(e.name ?? '—')}</span>
+      <span class="hud-label">POPULATION</span>${popDisplay}
+      <span class="hud-label">POSITION</span><span class="telemetry">${e.lat.toFixed(4)}°, ${e.lng.toFixed(4)}°</span>
+      <span class="hud-label">SOURCE</span><span class="telemetry">${escHtml(e.source)}</span>
+    </div>
+    ${e.description ? `<p style="color:var(--text-mid);font-size:var(--fs-11);margin-top:8px;line-height:1.5">${escHtml(e.description)}</p>` : ''}`;
+
+  if (isGouna) {
+    // Fetch live population counter and update
+    fetch('/api/egypt/gouna-population')
+      .then(r => r.json())
+      .then((data: unknown) => {
+        const el = document.getElementById('gouna-pop-display');
+        const pop = (data as { population?: number }).population;
+        if (el && pop) el.textContent = pop.toLocaleString();
+      })
+      .catch(() => { /* ignore */ });
+  }
+  return html;
+}
+
 function renderGeneric(e: GodEyeEntity): string {
   return `
     <div class="dossier__type">${escHtml(e.type.toUpperCase())}</div>
@@ -80,7 +123,12 @@ function renderEntity(entity: GodEyeEntity): string {
     case 'aircraft': return renderAircraft(entity as AircraftEntity);
     case 'earthquake': return renderEarthquake(entity as EarthquakeEntity);
     case 'fire': return renderFire(entity as FireEntity);
-    default: return renderGeneric(entity);
+    // egypt-city is not in EntityType union — handled via the label check below
+    default:
+      if ((entity as EgyptCityRecord).name && entity.source === 'curated' && entity.id.startsWith('eg-')) {
+        return renderEgyptCity(entity as EgyptCityRecord);
+      }
+      return renderGeneric(entity);
   }
 }
 

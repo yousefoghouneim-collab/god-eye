@@ -9,6 +9,7 @@ import { startAllPolls } from './polls.js';
 import { registerMcpRoutes } from './mcp/index.js';
 import { registerAgentRoutes } from './agent/bus.js';
 import { registerNewsRoutes } from './routes/news.js';
+import { registerEgyptRoutes, startGounaCounter } from './routes/egypt.js';
 import { startWatchOfficer, getWatchOfficerConfig, updateWatchOfficerConfig } from './agent/watch-officer.js';
 
 const app = Fastify({ logger: true });
@@ -25,6 +26,7 @@ await registerAIRoutes(app);
 await registerMcpRoutes(app);
 await registerAgentRoutes(app);
 await registerNewsRoutes(app);
+await registerEgyptRoutes(app);
 
 app.get('/api/health', async () => ({
   status: 'ok',
@@ -70,6 +72,7 @@ try {
   console.log(`[GOD-EYE API] listening on :${port}`);
   // Start poll loops after server is ready
   startAllPolls();
+  startGounaCounter();
   // Start watch officer if WATCH_OFFICER_ENABLED=true
   if (process.env['WATCH_OFFICER_ENABLED'] === 'true') {
     const minSev = process.env['WATCH_OFFICER_MIN_SEVERITY'] ?? 'high';
