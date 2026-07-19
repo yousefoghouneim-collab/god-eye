@@ -49,8 +49,14 @@ export const LAYER_REGISTRY: LayerDef[] = [
     icon: '🚢',
     category: 'military',
     renderers: ['globe', 'flat'],
-    source: 'ais',
-    keyRequired: true,
+    source: 'AISHub / curated',
+    explanation: {
+      purpose: 'Live vessel positions: curated notable ships always shown; full AIS feed with AISHUB_USERNAME/PASSWORD in .env',
+      source: 'AISHub community feed + curated notable vessels',
+      freshness: '3 min polling',
+      confidence: 'AIS transponder data; curated positions approximate',
+      limitations: 'Full live feed requires free AISHub account; vessels can disable AIS',
+    },
   },
   {
     key: 'bases',
@@ -249,5 +255,5 @@ export function getLayerDef(key: string): LayerDef | undefined {
 /** Currently live (have API data source wired) */
 export const LIVE_LAYER_KEYS = new Set([
   'earthquakes', 'fires', 'eonet', 'aircraft',
-  'volcanoes', 'conflicts', 'weather', 'satellites',
+  'volcanoes', 'conflicts', 'weather', 'satellites', 'vessels',
 ]);

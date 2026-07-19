@@ -9,6 +9,7 @@ import { CONFLICT_KEY } from '../sources/conflicts.js';
 import { WEATHER_KEY } from '../sources/weather.js';
 import { SATELLITE_KEY } from '../sources/satellites.js';
 import { MARKETS_KEY } from '../sources/markets.js';
+import { VESSEL_KEY } from '../sources/vessels.js';
 import { CURATED_DATASETS } from '../sources/curated.js';
 import type { FreshnessMeta } from '@god-eye/shared';
 
@@ -30,6 +31,7 @@ export async function registerLayerRoutes(app: FastifyInstance) {
     weather: WEATHER_KEY,
     satellites: SATELLITE_KEY,
     markets: MARKETS_KEY,
+    vessels: VESSEL_KEY,
   };
 
   // Static curated datasets (no cache needed)

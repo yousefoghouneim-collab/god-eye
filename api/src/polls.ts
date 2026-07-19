@@ -10,6 +10,7 @@ import { fetchConflicts, CONFLICT_KEY, CONFLICT_TTL, CONFLICT_SOURCE } from './s
 import { fetchWeatherAlerts, WEATHER_KEY, WEATHER_TTL, WEATHER_SOURCE } from './sources/weather.js';
 import { fetchSatellites, SATELLITE_KEY, SATELLITE_TTL, SATELLITE_SOURCE } from './sources/satellites.js';
 import { fetchMarkets, MARKETS_KEY, MARKETS_TTL, MARKETS_SOURCE } from './sources/markets.js';
+import { fetchVessels, VESSEL_KEY, VESSEL_TTL, VESSEL_SOURCE } from './sources/vessels.js';
 
 export function startAllPolls() {
   startPollLoop({
@@ -84,5 +85,14 @@ export function startAllPolls() {
     onUpdate: (data) => broadcast('markets', data),
   });
 
-  console.log('[Ghouneim Eye] All poll loops started (9 sources)');
+  startPollLoop({
+    key: VESSEL_KEY,
+    source: VESSEL_SOURCE,
+    intervalMs: VESSEL_TTL,
+    fetcher: fetchVessels,
+    onUpdate: (data) => broadcast('vessels', data),
+  });
+
+  console.log('[Ghouneim Eye] All poll loops started (10 sources)');
+
 }
