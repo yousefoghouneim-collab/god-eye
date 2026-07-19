@@ -205,7 +205,6 @@ export function App() {
                   class: `layer-row__dot ${active ? 'layer-row__dot--fresh' : ''}`,
                   title: isLive ? 'Live data' : 'Coming soon',
                 }),
-                h('span', { class: 'layer-row__icon', style: 'margin-right: 6px; font-size: 14px' }, layer.icon),
                 h('span', { class: 'layer-row__label' }, layer.label),
                 h('span', { class: 'layer-row__toggle' }),
               );
