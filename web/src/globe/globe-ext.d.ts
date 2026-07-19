@@ -52,6 +52,33 @@ export interface GlobeExt extends GlobeInstance {
   pointsTransitionDuration(ms: number): GlobeExt;
   onPointClick(fn: (point: object, event: MouseEvent) => void): GlobeExt;
 
+  // Arcs layer
+  arcsData(): object[];
+  arcsData(data: object[]): GlobeExt;
+  arcStartLat(fn: string | ((d: object) => number)): GlobeExt;
+  arcStartLng(fn: string | ((d: object) => number)): GlobeExt;
+  arcEndLat(fn: string | ((d: object) => number)): GlobeExt;
+  arcEndLng(fn: string | ((d: object) => number)): GlobeExt;
+  arcColor(fn: string | ((d: object) => string)): GlobeExt;
+  arcAltitude(fn: number | ((d: object) => number)): GlobeExt;
+  arcStroke(fn: number | ((d: object) => number)): GlobeExt;
+  arcDashLength(fn: number | ((d: object) => number)): GlobeExt;
+  arcDashGap(fn: number | ((d: object) => number)): GlobeExt;
+  arcDashAnimateTime(ms: number | ((d: object) => number)): GlobeExt;
+
+  // Labels layer
+  labelsData(): object[];
+  labelsData(data: object[]): GlobeExt;
+  labelLat(fn: string | ((d: object) => number)): GlobeExt;
+  labelLng(fn: string | ((d: object) => number)): GlobeExt;
+  labelText(fn: string | ((d: object) => string)): GlobeExt;
+  labelSize(fn: number | ((d: object) => number)): GlobeExt;
+  labelColor(fn: string | ((d: object) => string)): GlobeExt;
+  labelAltitude(fn: number | ((d: object) => number)): GlobeExt;
+  labelResolution(n: number): GlobeExt;
+  labelIncludeDot(fn: boolean | ((d: object) => boolean)): GlobeExt;
+  labelDotRadius(fn: number | ((d: object) => number)): GlobeExt;
+
   // HTML elements layer
   htmlElementsData(): object[];
   htmlElementsData(data: object[]): GlobeExt;

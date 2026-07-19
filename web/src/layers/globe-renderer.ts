@@ -6,6 +6,81 @@ import { DataBus } from '../bus/data-bus.js';
 import type { GlobeExt } from '../globe/globe-ext.js';
 import type { GodEyeEntity, EarthquakeEntity, FireEntity, AircraftEntity } from '@god-eye/shared';
 
+// ─── Country label centroids ───
+interface CountryLabel { name: string; lat: number; lng: number; size: number }
+const COUNTRY_LABELS: CountryLabel[] = [
+  { name: 'RUSSIA',         lat: 61.5,   lng: 105.3,  size: 1.2 },
+  { name: 'CANADA',         lat: 60.0,   lng: -96.8,  size: 1.0 },
+  { name: 'USA',            lat: 37.1,   lng: -95.7,  size: 1.0 },
+  { name: 'CHINA',          lat: 35.9,   lng: 104.2,  size: 1.0 },
+  { name: 'BRAZIL',         lat: -10.3,  lng: -53.2,  size: 0.9 },
+  { name: 'AUSTRALIA',      lat: -25.3,  lng: 133.8,  size: 0.9 },
+  { name: 'INDIA',          lat: 20.6,   lng: 79.1,   size: 0.9 },
+  { name: 'ARGENTINA',      lat: -34.0,  lng: -64.0,  size: 0.8 },
+  { name: 'KAZAKHSTAN',     lat: 48.0,   lng: 68.0,   size: 0.7 },
+  { name: 'ALGERIA',        lat: 28.0,   lng: 2.6,    size: 0.7 },
+  { name: 'CONGO (DRC)',     lat: -4.0,   lng: 24.0,   size: 0.7 },
+  { name: 'GREENLAND',      lat: 72.0,   lng: -42.0,  size: 0.7 },
+  { name: 'SAUDI ARABIA',   lat: 23.9,   lng: 45.1,   size: 0.7 },
+  { name: 'MEXICO',         lat: 23.6,   lng: -102.6, size: 0.7 },
+  { name: 'INDONESIA',      lat: -0.8,   lng: 113.9,  size: 0.7 },
+  { name: 'SUDAN',          lat: 15.6,   lng: 32.5,   size: 0.6 },
+  { name: 'LIBYA',          lat: 26.3,   lng: 17.2,   size: 0.6 },
+  { name: 'IRAN',           lat: 32.4,   lng: 53.7,   size: 0.6 },
+  { name: 'MONGOLIA',       lat: 46.9,   lng: 103.8,  size: 0.6 },
+  { name: 'PERU',           lat: -9.2,   lng: -75.0,  size: 0.6 },
+  { name: 'CHAD',           lat: 15.5,   lng: 18.7,   size: 0.6 },
+  { name: 'ANGOLA',         lat: -11.2,  lng: 17.9,   size: 0.6 },
+  { name: 'MALI',           lat: 17.6,   lng: -2.0,   size: 0.6 },
+  { name: 'SOUTH AFRICA',   lat: -29.0,  lng: 25.1,   size: 0.6 },
+  { name: 'COLOMBIA',       lat: 4.6,    lng: -74.3,  size: 0.6 },
+  { name: 'ETHIOPIA',       lat: 9.1,    lng: 40.5,   size: 0.6 },
+  { name: 'NIGERIA',        lat: 9.1,    lng: 8.7,    size: 0.6 },
+  { name: 'EGYPT',          lat: 26.8,   lng: 30.8,   size: 0.6 },
+  { name: 'TURKEY',         lat: 38.9,   lng: 35.2,   size: 0.6 },
+  { name: 'UKRAINE',        lat: 48.4,   lng: 31.2,   size: 0.55 },
+  { name: 'FRANCE',         lat: 46.2,   lng: 2.2,    size: 0.55 },
+  { name: 'GERMANY',        lat: 51.2,   lng: 10.5,   size: 0.55 },
+  { name: 'PAKISTAN',       lat: 30.4,   lng: 69.3,   size: 0.55 },
+  { name: 'MYANMAR',        lat: 19.2,   lng: 96.7,   size: 0.55 },
+  { name: 'VENEZUELA',      lat: 6.4,    lng: -66.6,  size: 0.55 },
+  { name: 'MOZAMBIQUE',     lat: -18.7,  lng: 35.5,   size: 0.55 },
+  { name: 'TANZANIA',       lat: -6.4,   lng: 34.9,   size: 0.55 },
+  { name: 'NAMIBIA',        lat: -22.0,  lng: 18.5,   size: 0.55 },
+  { name: 'ZAMBIA',         lat: -13.1,  lng: 27.8,   size: 0.55 },
+  { name: 'AFGHANISTAN',    lat: 33.9,   lng: 67.7,   size: 0.55 },
+  { name: 'JAPAN',          lat: 36.2,   lng: 138.3,  size: 0.55 },
+  { name: 'SPAIN',          lat: 40.5,   lng: -3.7,   size: 0.55 },
+  { name: 'SWEDEN',         lat: 62.2,   lng: 17.6,   size: 0.55 },
+  { name: 'NORWAY',         lat: 64.9,   lng: 13.8,   size: 0.55 },
+  { name: 'FINLAND',        lat: 64.5,   lng: 26.3,   size: 0.55 },
+  { name: 'BOLIVIA',        lat: -16.3,  lng: -63.6,  size: 0.55 },
+  { name: 'IRAQ',           lat: 33.2,   lng: 43.7,   size: 0.55 },
+  { name: 'KENYA',          lat: 0.0,    lng: 37.9,   size: 0.55 },
+  { name: 'SOMALIA',        lat: 5.2,    lng: 46.2,   size: 0.55 },
+  { name: 'MADAGASCAR',     lat: -18.8,  lng: 46.9,   size: 0.55 },
+  { name: 'ZIMBABWE',       lat: -19.0,  lng: 29.2,   size: 0.5 },
+  { name: 'CAMEROON',       lat: 3.9,    lng: 11.5,   size: 0.5 },
+  { name: 'POLAND',         lat: 51.9,   lng: 19.1,   size: 0.5 },
+  { name: 'THAILAND',       lat: 15.9,   lng: 100.9,  size: 0.5 },
+  { name: 'PHILIPPINES',    lat: 12.9,   lng: 121.8,  size: 0.5 },
+  { name: 'MALAYSIA',       lat: 4.2,    lng: 108.0,  size: 0.5 },
+  { name: 'VIETNAM',        lat: 14.1,   lng: 108.3,  size: 0.5 },
+  { name: 'SOUTH KOREA',    lat: 35.9,   lng: 127.8,  size: 0.5 },
+  { name: 'NORTH KOREA',    lat: 40.3,   lng: 127.5,  size: 0.5 },
+  { name: 'UK',             lat: 54.4,   lng: -2.5,   size: 0.5 },
+  { name: 'ITALY',          lat: 41.9,   lng: 12.6,   size: 0.5 },
+  { name: 'CHILE',          lat: -33.5,  lng: -70.7,  size: 0.5 },
+  { name: 'UAE',            lat: 23.4,   lng: 53.8,   size: 0.5 },
+  { name: 'ISRAEL',         lat: 31.5,   lng: 34.8,   size: 0.45 },
+  { name: 'JORDAN',         lat: 31.0,   lng: 36.2,   size: 0.45 },
+  { name: 'SYRIA',          lat: 34.8,   lng: 38.9,   size: 0.45 },
+  { name: 'YEMEN',          lat: 15.6,   lng: 48.5,   size: 0.45 },
+  { name: 'OMAN',           lat: 21.5,   lng: 55.9,   size: 0.45 },
+  { name: 'QATAR',          lat: 25.3,   lng: 51.2,   size: 0.4 },
+  { name: 'KUWAIT',         lat: 29.3,   lng: 47.5,   size: 0.4 },
+];
+
 // ─── Aircraft trail history (client-side, last 12 positions per ICAO24) ───
 const TRAIL_MAX = 12;
 const aircraftTrails = new Map<string, Array<{ lat: number; lng: number }>>();
@@ -131,6 +206,18 @@ function updateGlobe() {
 
 export function initGlobeRenderer(globe: GlobeExt) {
   globeInstance = globe;
+
+  // ─── Country name labels ───
+  globe
+    .labelsData(COUNTRY_LABELS)
+    .labelLat((d) => (d as CountryLabel).lat)
+    .labelLng((d) => (d as CountryLabel).lng)
+    .labelText((d) => (d as CountryLabel).name)
+    .labelSize((d) => (d as CountryLabel).size)
+    .labelColor(() => 'rgba(180, 200, 220, 0.65)')
+    .labelAltitude(0.002)
+    .labelResolution(2)
+    .labelIncludeDot(false);
 
   DataBus.on('layer:render', (payload) => {
     const { layer, data } = payload as { layer: string; data: GodEyeEntity[] };
