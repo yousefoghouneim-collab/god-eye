@@ -65,11 +65,16 @@ html, body, #app {
 }
 
 .topbar__brand {
-  font: 600 var(--fs-14)/1 'IBM Plex Sans Condensed', system-ui;
-  text-transform: uppercase;
-  letter-spacing: 0.16em;
-  color: var(--sig-amber);
+  display: flex;
+  align-items: center;
   flex-shrink: 0;
+}
+
+.topbar__logo {
+  height: 24px;
+  width: auto;
+  display: block;
+  object-fit: contain;
 }
 
 .topbar__clock {

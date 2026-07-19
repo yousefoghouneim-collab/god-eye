@@ -84,5 +84,5 @@ export function startAllPolls() {
     onUpdate: (data) => broadcast('markets', data),
   });
 
-  console.log('[GOD-EYE] All poll loops started (9 sources)');
+  console.log('[Ghouneim Eye] All poll loops started (9 sources)');
 }

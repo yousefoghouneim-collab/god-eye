@@ -1,4 +1,4 @@
-# GOD-EYE
+# Ghouneim Eye
 
 **Self-hosted, Palantir-class real-time global-intelligence platform.**
 A single-operator situational-awareness cockpit with a live rotating 3D Earth,
