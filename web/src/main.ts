@@ -194,6 +194,9 @@ async function showLocationDossier(lat: number, lng: number) {
   // Fetch country news (non-blocking)
   if (resolvedCountry) {
     fetchCountryNews(resolvedCountry);
+    // Notify radio + markets panels of the country context
+    DataBus.emit('radio:filter-country', { country: resolvedCountry });
+    DataBus.emit('markets:show-country', { country: resolvedCountry });
   } else {
     const newsEl = document.getElementById('dossier-news');
     if (newsEl) newsEl.innerHTML = '';
@@ -312,6 +315,12 @@ initPluginPanel();
 (window as unknown as Record<string, unknown>).togglePluginPanel = togglePluginPanel;
 
 DataBus.on('agent:show_dossier', (payload) => {
+  const { lat, lng } = payload as { lat: number; lng: number };
+  showLocationDossier(lat, lng);
+});
+
+// 2D flat map right-click → same dossier as 3D globe
+DataBus.on('map:contextmenu', (payload) => {
   const { lat, lng } = payload as { lat: number; lng: number };
   showLocationDossier(lat, lng);
 });

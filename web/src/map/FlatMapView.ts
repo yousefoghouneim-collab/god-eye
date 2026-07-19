@@ -111,6 +111,12 @@ export function createFlatMapView(container: HTMLElement): { destroy: () => void
 
   map.addControl(overlay as unknown as maplibregl.IControl);
 
+  // Right-click → same location dossier as 3D globe
+  map.on('contextmenu', (e) => {
+    const { lng, lat } = e.lngLat;
+    DataBus.emit('map:contextmenu', { lat, lng });
+  });
+
   // Listen for layer data
   const unsub = DataBus.on('layer:render', (payload) => {
     const { layer, data } = payload as { layer: string; data: GodEyeEntity[] };

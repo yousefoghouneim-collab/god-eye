@@ -4,9 +4,11 @@
  * Opt-in panel; audio playback is best-effort (HLS/MP3 from OpenMHZ CDN).
  */
 
-let panelEl: HTMLElement | null = null;
+import { DataBus } from '../bus/data-bus.js';
 
+let panelEl: HTMLElement | null = null;
 let activeSysName = '';
+let countryFilter = '';
 
 interface KiwiNode {
   id: string;
@@ -105,14 +107,18 @@ function buildPanel(): HTMLElement {
 
 // ── Render helpers ────────────────────────────────────────────────────────────
 
-function renderKiwiNodes(nodes: KiwiNode[]) {
+function renderKiwiNodes(nodes: KiwiNode[], filter?: string) {
   const el = document.getElementById('radio-kiwi-list');
   if (!el) return;
-  if (!nodes.length) {
-    el.innerHTML = '<p style="color:var(--text-lo)">No KiwiSDR nodes found.</p>';
+  const filtered = filter
+    ? nodes.filter(n => (n.name || '').toLowerCase().includes(filter.toLowerCase()))
+    : nodes;
+  if (!filtered.length) {
+    el.innerHTML = `<p style="color:var(--text-lo)">${filter ? `No radio stations available for ${filter}.` : 'No KiwiSDR nodes found.'}</p>`;
     return;
   }
-  el.innerHTML = nodes.slice(0, 50).map(n => {
+  const nodes2 = filtered;
+  el.innerHTML = nodes2.slice(0, 50).map(n => {
     const load = n.users_max > 0 ? Math.round((n.users / n.users_max) * 100) : 0;
     const loadColor = load > 80 ? 'var(--signal-red)' : load > 50 ? 'var(--signal-amber)' : 'var(--signal-green)';
     const url = n.url.startsWith('http') ? n.url : `http://${n.url}`;
@@ -202,7 +208,7 @@ function renderCalls(calls: OpenMhzCall[]) {
 
 // ── Data loaders ──────────────────────────────────────────────────────────────
 
-async function loadKiwiNodes(nearLat?: number, nearLon?: number) {
+async function loadKiwiNodes(nearLat?: number, nearLon?: number, country?: string) {
   const btn = document.getElementById('radio-kiwi-load-btn');
   if (btn) btn.textContent = '...';
   try {
@@ -216,7 +222,7 @@ async function loadKiwiNodes(nearLat?: number, nearLon?: number) {
           .map(n => ({ ...n, _d: Math.hypot(n.lat - nearLat, n.lon - nearLon) }))
           .sort((a, b) => a._d - b._d);
       }
-      renderKiwiNodes(nodes);
+      renderKiwiNodes(nodes, country ?? (countryFilter || undefined));
     }
   } catch {
     const el = document.getElementById('radio-kiwi-list');
@@ -308,6 +314,15 @@ export function initRadioPanel() {
   document.body.appendChild(panelEl);
 
   document.getElementById('radio-close-btn')?.addEventListener('click', hideRadioPanel);
+
+  // Country filter from globe right-click
+  DataBus.on('radio:filter-country', (payload) => {
+    const { country } = payload as { country: string };
+    countryFilter = country;
+    showRadioPanel();
+    switchTab('kiwi');
+    loadKiwiNodes(undefined, undefined, country);
+  });
   document.getElementById('radio-tab-kiwi')?.addEventListener('click', () => switchTab('kiwi'));
   document.getElementById('radio-tab-scanner')?.addEventListener('click', () => switchTab('scanner'));
 

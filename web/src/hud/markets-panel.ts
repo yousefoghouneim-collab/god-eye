@@ -20,6 +20,43 @@ interface MarketsSnapshot {
   fearGreed: MarketEntry | null;
 }
 
+import { DataBus } from '../bus/data-bus.js';
+
+// Country → primary index + currency mapping
+const COUNTRY_FINANCE: Record<string, { index: string; indexName: string; currency: string }> = {
+  'United States': { index: '^GSPC', indexName: 'S&P 500', currency: 'USD' },
+  'United Kingdom': { index: '^FTSE', indexName: 'FTSE 100', currency: 'GBP' },
+  'Germany': { index: '^GDAXI', indexName: 'DAX', currency: 'EUR' },
+  'France': { index: '^FCHI', indexName: 'CAC 40', currency: 'EUR' },
+  'Japan': { index: '^N225', indexName: 'Nikkei 225', currency: 'JPY' },
+  'China': { index: '000001.SS', indexName: 'SSE Composite', currency: 'CNY' },
+  'Hong Kong': { index: '^HSI', indexName: 'Hang Seng', currency: 'HKD' },
+  'India': { index: '^BSESN', indexName: 'BSE Sensex', currency: 'INR' },
+  'Australia': { index: '^AXJO', indexName: 'ASX 200', currency: 'AUD' },
+  'Canada': { index: '^GSPTSE', indexName: 'TSX', currency: 'CAD' },
+  'Brazil': { index: '^BVSP', indexName: 'Bovespa', currency: 'BRL' },
+  'South Korea': { index: '^KS11', indexName: 'KOSPI', currency: 'KRW' },
+  'Saudi Arabia': { index: '^TASI.SR', indexName: 'Tadawul', currency: 'SAR' },
+  'United Arab Emirates': { index: '^DFMGI', indexName: 'DFM General', currency: 'AED' },
+  'Egypt': { index: '^CASE30', indexName: 'EGX 30', currency: 'EGP' },
+  'Turkey': { index: '^XU100', indexName: 'BIST 100', currency: 'TRY' },
+  'Russia': { index: 'IMOEX.ME', indexName: 'MOEX Russia', currency: 'RUB' },
+  'Singapore': { index: '^STI', indexName: 'STI', currency: 'SGD' },
+  'Switzerland': { index: '^SSMI', indexName: 'SMI', currency: 'CHF' },
+  'Spain': { index: '^IBEX', indexName: 'IBEX 35', currency: 'EUR' },
+  'Italy': { index: 'FTSEMIB.MI', indexName: 'FTSE MIB', currency: 'EUR' },
+  'Netherlands': { index: '^AEX', indexName: 'AEX', currency: 'EUR' },
+  'Sweden': { index: '^OMX', indexName: 'OMX Stockholm', currency: 'SEK' },
+  'Mexico': { index: '^MXX', indexName: 'IPC', currency: 'MXN' },
+  'South Africa': { index: '^JNB', indexName: 'JSE All Share', currency: 'ZAR' },
+  'Israel': { index: '^TA125.TA', indexName: 'TA-125', currency: 'ILS' },
+  'Pakistan': { index: '^KSE100', indexName: 'KSE 100', currency: 'PKR' },
+  'Indonesia': { index: '^JKSE', indexName: 'IDX Composite', currency: 'IDR' },
+  'Malaysia': { index: '^KLSE', indexName: 'FTSE Bursa', currency: 'MYR' },
+  'Qatar': { index: '^QSI', indexName: 'Qatar Exchange', currency: 'QAR' },
+  'Kuwait': { index: '^KWSE', indexName: 'Kuwait SE', currency: 'KWD' },
+};
+
 let panelEl: HTMLElement | null = null;
 let refreshTimer: ReturnType<typeof setInterval> | null = null;
 
@@ -134,6 +171,32 @@ async function loadMarkets() {
   }
 }
 
+function showCountryMarkets(country: string) {
+  const body = document.getElementById('markets-body');
+  if (!body) return;
+  showMarketsPanel();
+  const info = COUNTRY_FINANCE[country];
+  if (!info) {
+    body.innerHTML = `
+      <div class="left-rail__section-title" style="margin-bottom:6px">${country.toUpperCase()}</div>
+      <p style="color:var(--text-lo);font-size:var(--fs-11)">No direct market data for this country. Showing global snapshot below.</p>`;
+    loadMarkets();
+    return;
+  }
+  body.innerHTML = `
+    <div class="left-rail__section-title" style="margin-bottom:6px">${country.toUpperCase()}</div>
+    <div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid var(--line-hair)">
+      <span style="color:var(--text-lo);font-size:var(--fs-10)">${info.indexName}</span>
+      <span class="telemetry" style="font-size:var(--fs-11);color:var(--text-mid)">see INDICES below</span>
+    </div>
+    <div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid var(--line-hair)">
+      <span style="color:var(--text-lo);font-size:var(--fs-10)">CURRENCY</span>
+      <span class="telemetry" style="font-size:var(--fs-11)">${info.currency}/USD</span>
+    </div>
+    <div style="margin-top:6px"></div>`;
+  loadMarkets();
+}
+
 export function initMarketsPanel() {
   if (!document.getElementById('markets-panel-style')) {
     const style = document.createElement('style');
@@ -158,6 +221,12 @@ export function initMarketsPanel() {
 
   document.getElementById('markets-close-btn')?.addEventListener('click', hideMarketsPanel);
   document.getElementById('markets-refresh-btn')?.addEventListener('click', loadMarkets);
+
+  // Country context from globe right-click
+  DataBus.on('markets:show-country', (payload) => {
+    const { country } = payload as { country: string };
+    showCountryMarkets(country);
+  });
 }
 
 export function showMarketsPanel() {
