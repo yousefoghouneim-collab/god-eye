@@ -1,3 +1,10 @@
+/* ── Google Fonts: Inter (body) + Space Grotesk (headings) ── */
+/* Matches youssefghouneim.com design system.                  */
+/* Note: IBM Plex Mono kept for telemetry/monospace data.      */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap');
+
+/* ── IBM Plex Mono (kept for telemetry readouts) ── */
+
 /* IBM Plex Sans */
 @font-face {
   font-family: 'IBM Plex Sans';

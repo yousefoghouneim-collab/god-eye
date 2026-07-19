@@ -1,27 +1,27 @@
 :root {
-  /* ── Base surfaces (cool neutral ink, NOT pure black, NOT trendy #0A0A0A) ── */
-  --ink-000:  #06090D;   /* deepest — behind globe / vignette edges           */
-  --ink-050:  #0A0E14;   /* app background                                     */
-  --ink-100:  #0E141B;   /* rail / bar background                              */
-  --ink-150:  #131A22;   /* panel surface                                      */
-  --ink-200:  #1A222C;   /* raised panel / input                               */
-  --ink-250:  #222C38;   /* hover surface                                      */
+  /* ── Base surfaces — matching youssefghouneim.com dark palette ── */
+  --ink-000:  #090909;   /* deepest — behind globe / vignette edges           */
+  --ink-050:  #0f0f0f;   /* app background (site's #0f0f0f)                   */
+  --ink-100:  #141414;   /* rail / bar background                              */
+  --ink-150:  #1a1a1a;   /* panel surface                                      */
+  --ink-200:  #202020;   /* raised panel / input                               */
+  --ink-250:  #2a2a2a;   /* hover surface                                      */
 
   /* ── Structure ── */
-  --line-hair:  #1E2831; /* hairline dividers, panel edges                     */
-  --line-soft:  #2A3742; /* stronger dividers, active borders                  */
-  --grid-line:  #16202A; /* graticule / background grid                        */
-  --bracket:    #3A4A57; /* corner brackets on panels                          */
+  --line-hair:  #222222; /* hairline dividers, panel edges                     */
+  --line-soft:  #333333; /* stronger dividers, active borders                  */
+  --grid-line:  #1a1a1a; /* graticule / background grid                        */
+  --bracket:    #3a3a3a; /* corner brackets on panels                          */
 
-  /* ── Text (soft off-white, never #FFFFFF glare) ── */
-  --text-hi:   #C9D4DE;  /* primary                                            */
-  --text-mid:  #8B9AA8;  /* secondary / labels                                 */
-  --text-lo:   #5C6B78;  /* tertiary / disabled                               */
-  --text-inv:  #06090D;  /* on light/accent fills                              */
+  /* ── Text ── */
+  --text-hi:   #f0f0f0;  /* primary (near-white per site)                      */
+  --text-mid:  #a0a0a0;  /* secondary / labels                                 */
+  --text-lo:   #555555;  /* tertiary / disabled                                */
+  --text-inv:  #0f0f0f;  /* on light/accent fills                              */
 
-  /* ── Signal palette (used sparingly, meaningfully) ── */
-  --sig-amber:  #E0A82E; /* PRIMARY ACCENT: active tab, selection, focus       */
-  --sig-amber-dim: #A87F20;
+  /* ── Signal palette — site accent: blue hsl(210 100% 55%) = #1a8fff ── */
+  --sig-amber:     #1a8fff; /* PRIMARY ACCENT: active, selection, focus        */
+  --sig-amber-dim: #0f5fb8; /* dimmed accent                                   */
   --sig-green:  #3FB27F; /* live / nominal / positive delta                    */
   --sig-orange: #D9822B; /* elevated / warning                                 */
   --sig-red:    #D6453D; /* critical / alert / negative delta                  */
